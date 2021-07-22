@@ -17,8 +17,8 @@ function GitHome() {
   if (loading) {
     return (
       <Container style={{height: '100vh'}} className="d-flex flex-column align-items-center justify-content-center">
-      <div class="spinner-border text-light" role="status">
-        <span class="sr-only"></span>
+      <div className="spinner-border text-light" role="status">
+        <span className="sr-only"></span>
       </div>
       </Container>
     );
