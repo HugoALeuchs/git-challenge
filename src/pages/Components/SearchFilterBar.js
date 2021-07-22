@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import { useLazyQuery } from "@apollo/client";
+
+import searchRoute from "../../routes/SearchRoute";
 
 import {
   InputGroup,
@@ -8,11 +11,22 @@ import {
 } from "react-bootstrap";
 
 
+
 function SearchFilterBar(props) {
-  const [searchValue, setSearchValeu] = useState();
+  const [searchValueInput, setSearchValueInput] = useState();
+
+  const [getSearchData, { loading, data }] = useLazyQuery(searchRoute);
 
   function handleChange(e) {
-    setSearchValeu(e.target.value);
+    setSearchValueInput(e.target.value);
+  }
+  
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+  if(data){
+    // props.search(data);
+    // props.search(searchValueInput);
   }
 
   return (
@@ -23,7 +37,8 @@ function SearchFilterBar(props) {
         aria-label="Text input with dropdown button"
         onKeyPress={(event) => {
           if (event.key === "Enter") {
-            
+              // getSearchData({ variables: { searchValue: searchValueInput+"user:HugoALeuchs" }});
+              props.search(searchValueInput);
           }
         }}
       />

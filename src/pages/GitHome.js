@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import RepositoriesList from "./Components/RepositoriesList";
 
 import { useQuery } from "@apollo/client";
@@ -6,13 +6,23 @@ import { useQuery } from "@apollo/client";
 import userRoute from "../routes/UserRoute";
 
 import { Container, Col, Row, Image } from "react-bootstrap";
+import SearchRepoList from "./Components/SearchRepoList";
 
-function GitHome(props) {
+function GitHome() {
+
+  const [searchValueData, setSearchValueData] = useState();
+
   const { loading, error, data } = useQuery(userRoute, {
     variables: {
       name: "HugoALeuchs",
     },
   });
+
+  function searchValue(value) {
+
+    setSearchValueData(value);
+
+  }
 
   if (loading) {
     return <p>Loading...</p>;
@@ -38,7 +48,11 @@ function GitHome(props) {
             <p>{user.email}</p>
           </Col>
           <Col xs={12} md={8}>
-            <RepositoriesList></RepositoriesList>
+            {searchValueData ? 
+              <SearchRepoList searchValue={searchValueData}></SearchRepoList>
+              : 
+              <RepositoriesList searchController={searchValue} ></RepositoriesList>
+            }
           </Col>
         </Row>
       </Container>

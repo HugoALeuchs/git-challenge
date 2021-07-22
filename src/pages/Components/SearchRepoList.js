@@ -3,11 +3,12 @@ import SearchFilterBar from "./SearchFilterBar";
 
 import { useQuery } from "@apollo/client";
 
+// import searchRoute from "../../routes/SearchRoute";
 import repositoriesRoute from "../../routes/RepositoriesRoute";
 
 import { Card, Col, Row, Button } from "react-bootstrap";
 
-function RepositoriesList(props) {
+function SearchRepoList(props) {
   const [firstPageCursor, setFirstPageCursor] = useState();
   const [lastPageCursor, setLastPageCursor] = useState();
   const [nextPages, setNextPages] = useState(5);
@@ -74,7 +75,7 @@ function RepositoriesList(props) {
   }
 
   if (data) {
-    var repositories = data.viewer.repositories.nodes;
+    var repositories = data.viewer.repositories.nodes.filter((repo) => repo.name.includes(props.searchValue));
 
     var pageInfos = data.viewer.repositories.pageInfo;
 
@@ -133,4 +134,4 @@ function RepositoriesList(props) {
   }
 }
 
-export default RepositoriesList;
+export default SearchRepoList;
