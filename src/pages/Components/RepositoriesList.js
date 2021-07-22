@@ -3,9 +3,9 @@ import SearchFilterBar from "./SearchFilterBar";
 
 import { useQuery } from "@apollo/client";
 
-import repositoriesRoute from "../../routes/RepositoriesRoute";
+import repositoriesSearchRoute from "../../routes/RepositoriesSearchRoute";
 
-import { Card, Col, Row, Button } from "react-bootstrap";
+import { Container, Card, Col, Row, Button } from "react-bootstrap";
 
 function RepositoriesList(props) {
   const [firstPageCursor, setFirstPageCursor] = useState();
@@ -13,20 +13,17 @@ function RepositoriesList(props) {
   const [nextPages, setNextPages] = useState(5);
   const [previousPages, setPreviousPages] = useState();
 
-  const [isFork, setForkInformation] = useState();
-  const [isLoked, setLokedInformation] = useState();
+  const [query, setQuery] = useState("fork:true user:HugoALeuchs is:public");
 
-  const [orderBy, setOrderBy] = useState("CREATED_AT");
+  const [searchValueData, setSearchValue] = useState();
 
-  const { loading, error, data } = useQuery(repositoriesRoute, {
+  const { loading, error, data } = useQuery(repositoriesSearchRoute, {
     variables: {
       next: nextPages,
       previous: previousPages,
       after: firstPageCursor,
       before: lastPageCursor,
-      fork: isFork,
-      locked: isLoked,
-      orderBy: orderBy,
+      query: query,
     },
   });
 
@@ -34,71 +31,112 @@ function RepositoriesList(props) {
     setLastPageCursor();
     setNextPages(5);
     setPreviousPages();
-    setFirstPageCursor(data.viewer.repositories.pageInfo.endCursor);
+    setFirstPageCursor(data.search.pageInfo.endCursor);
   }
   function setPreviusPage() {
     setFirstPageCursor();
     setNextPages();
     setPreviousPages(5);
-    setLastPageCursor(data.viewer.repositories.pageInfo.startCursor);
+    setLastPageCursor(data.search.pageInfo.startCursor);
   }
 
   function filterValue(value) {
     if (value === "Fork") {
-      setLokedInformation();
-      setForkInformation(true);
+      setQuery("fork:false user:HugoALeuchs is:public");
+    } else if (value === "Fechado") {
+      setQuery(`${query} state:close`);
     } else if (value === "Arquivado") {
-      setForkInformation();
-      setLokedInformation(true);
+      setQuery(`${query} state:archived`);
     } else {
-      setForkInformation();
-      setLokedInformation();
+      setQuery("fork:true user:HugoALeuchs is:public");
     }
   }
 
   function sortValue(value) {
     if (value === "Último atualizado") {
-      setOrderBy("PUSHED_AT");
+      setQuery(`${query} sort:updated-desc`);
     } else if (value === "Nome") {
-      setOrderBy("NAME");
+      setQuery(`${query} sort:name-asc`);
     } else if (value === "Estrelas") {
-      setOrderBy("STARGAZERS");
+      setQuery(`${query} sort:stars-desc`);
+    }
+  }
+
+  function searchValue(value) {
+    setSearchValue(value);
+    if (value) {
+      setQuery(value + " fork:true user:HugoALeuchs is:public");
+    } else {
+      setQuery("fork:true user:HugoALeuchs is:public");
     }
   }
 
   if (loading) {
-    return <p>Loading...</p>;
+    return (
+      <Container
+        style={{ height: "100vh" }}
+        className="d-flex flex-column align-items-center justify-content-center"
+      >
+        <div class="spinner-border text-light" role="status">
+          <span class="sr-only"></span>
+        </div>
+      </Container>
+    );
   }
+
   if (error) {
     return <p>Error! {error.message}</p>;
   }
 
   if (data) {
-    var repositories = data.viewer.repositories.nodes;
+    var repositories = data.search.edges;
 
-    var pageInfos = data.viewer.repositories.pageInfo;
+    var pageInfos = data.search.pageInfo;
 
     return (
       <>
-        <Row xs={1} className="mt-4 g-3">
+        <Row xs={1} className=" mt-4 g-3">
           <SearchFilterBar
             filter={filterValue}
             sort={sortValue}
-            search={props.searchController}
+            search={searchValue}
+            searchQuery={searchValueData}
           ></SearchFilterBar>
           {repositories.map((repo) => (
-            <Col key={repo.id}>
-              <Card>
+            <Col key={repo.node.id}>
+              <Card className="bg-dark">
                 <Card.Body>
-                  <Card.Title>{repo.name}</Card.Title>
-                  <Card.Text>{repo.description}</Card.Text>
+                  <Card.Title className="text-light">
+                    <a className="text-decoration-none" href={repo.node.url}>
+                      {repo.node.name}
+                    </a>
+                  </Card.Title>
+                  <Card.Text className="text-light">
+                    {repo.node.description
+                      ? repo.node.description.substring(0, 85) + ". . ."
+                      : "Description not informed"}
+                  </Card.Text>
                 </Card.Body>
-                <Card.Footer>
-                  {repo.languages.nodes.map((language, index) => (
-                    <small key={index} className="mx-1">
-                      {language.name}
-                    </small>
-                  ))}
+                <Card.Footer className="d-flex align-items-center text-light">
+                  {repo.node.languages.nodes.length !== 0 ? (
+                    repo.node.languages.nodes.map((language, index) => (
+                      <>
+                        <div
+                          style={{
+                            width: "15px",
+                            height: "15px",
+                            borderRadius: "50%",
+                            backgroundColor: language.color,
+                          }}
+                        ></div>
+                        <small key={index} className="mx-2">
+                          {language.name}
+                        </small>
+                      </>
+                    ))
+                  ) : (
+                    <small className="mx-2">{"Language not informed"}</small>
+                  )}
                 </Card.Footer>
               </Card>
             </Col>
@@ -107,7 +145,7 @@ function RepositoriesList(props) {
         <Row xs={2}>
           {pageInfos.hasPreviousPage ? (
             <Button
-              className="mt-3 w-25 mx-auto"
+              className="m-3 w-25 mx-auto"
               variant="dark"
               onClick={setPreviusPage}
             >
@@ -118,7 +156,7 @@ function RepositoriesList(props) {
           )}
           {pageInfos.hasNextPage ? (
             <Button
-              className="mt-3 w-25 mx-auto"
+              className="m-3 w-25 mx-auto"
               variant="dark"
               onClick={setNextPage}
             >

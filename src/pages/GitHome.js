@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import RepositoriesList from "./Components/RepositoriesList";
 
 import { useQuery } from "@apollo/client";
@@ -6,26 +6,22 @@ import { useQuery } from "@apollo/client";
 import userRoute from "../routes/UserRoute";
 
 import { Container, Col, Row, Image } from "react-bootstrap";
-import SearchRepoList from "./Components/SearchRepoList";
 
 function GitHome() {
-
-  const [searchValueData, setSearchValueData] = useState();
-
   const { loading, error, data } = useQuery(userRoute, {
     variables: {
       name: "HugoALeuchs",
     },
   });
 
-  function searchValue(value) {
-
-    setSearchValueData(value);
-
-  }
-
   if (loading) {
-    return <p>Loading...</p>;
+    return (
+      <Container style={{height: '100vh'}} className="d-flex flex-column align-items-center justify-content-center">
+      <div class="spinner-border text-light" role="status">
+        <span class="sr-only"></span>
+      </div>
+      </Container>
+    );
   }
   if (error) {
     return <p>Error! {error.message}</p>;
@@ -43,16 +39,12 @@ function GitHome() {
             className="d-flex flex-column align-items-center mt-5"
           >
             <Image className="w-50" src={user.avatarUrl} roundedCircle fluid />
-            <h1 className="mt-2 text-center">{user.name}</h1>
-            <p>{user.location}</p>
-            <p>{user.email}</p>
+            <h1 className="mt-2 text-center text-light">{user.name}</h1>
+            <p className="text-light">{user.location}</p>
+            <p className="text-light">{user.email}</p>
           </Col>
           <Col xs={12} md={8}>
-            {searchValueData ? 
-              <SearchRepoList searchValue={searchValueData}></SearchRepoList>
-              : 
-              <RepositoriesList searchController={searchValue} ></RepositoriesList>
-            }
+            <RepositoriesList></RepositoriesList>
           </Col>
         </Row>
       </Container>

@@ -1,7 +1,4 @@
 import React, { useState } from "react";
-import { useLazyQuery } from "@apollo/client";
-
-import searchRoute from "../../routes/SearchRoute";
 
 import {
   InputGroup,
@@ -10,23 +7,11 @@ import {
   Dropdown,
 } from "react-bootstrap";
 
-
-
 function SearchFilterBar(props) {
   const [searchValueInput, setSearchValueInput] = useState();
 
-  const [getSearchData, { loading, data }] = useLazyQuery(searchRoute);
-
   function handleChange(e) {
     setSearchValueInput(e.target.value);
-  }
-  
-  if (loading) {
-    return <p>Loading...</p>;
-  }
-  if(data){
-    // props.search(data);
-    // props.search(searchValueInput);
   }
 
   return (
@@ -35,10 +20,11 @@ function SearchFilterBar(props) {
         onChange={handleChange}
         type="input"
         aria-label="Text input with dropdown button"
+        placeholder="Pesquisar"
+        defaultValue={props.searchQuery}
         onKeyPress={(event) => {
           if (event.key === "Enter") {
-              // getSearchData({ variables: { searchValue: searchValueInput+"user:HugoALeuchs" }});
-              props.search(searchValueInput);
+            props.search(searchValueInput);
           }
         }}
       />
@@ -54,6 +40,9 @@ function SearchFilterBar(props) {
         </Dropdown.Item>
         <Dropdown.Item onClick={() => props.filter("Fork")} href="#">
           Fork
+        </Dropdown.Item>
+        <Dropdown.Item onClick={() => props.filter("Fechado")} href="#">
+          Fechado
         </Dropdown.Item>
         <Dropdown.Item onClick={() => props.filter("Arquivado")} href="#">
           Arquivado
