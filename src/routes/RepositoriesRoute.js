@@ -1,9 +1,9 @@
 import { gql } from "@apollo/client";
 
 const REPOSITORIES = gql`
-  query REPOSITORIES($page: Int!) {
+  query REPOSITORIES($next: Int, $previous: Int, $after: String, $before: String, $fork: Boolean, $locked: Boolean, $orderBy: String) {
     viewer {
-      repositories(first: $page) {
+      repositories(first: $next, last: $previous,  privacy: PUBLIC, after: $after, before: $before, isFork: $fork, isLocked: $locked, orderBy: {field: $orderBy, direction: ASC}) {
         nodes {
           id
           name
@@ -15,6 +15,12 @@ const REPOSITORIES = gql`
               color
             }
           }
+        }
+        pageInfo {
+          hasNextPage
+          hasPreviousPage
+          startCursor
+          endCursor
         }
       }
     }

@@ -1,5 +1,5 @@
 import React from "react";
-import RepositoriesTable from "./Components/RepositoriesTable";
+import RepositoriesList from "./Components/RepositoriesList";
 
 import { useQuery } from "@apollo/client";
 
@@ -26,15 +26,19 @@ function GitHome(props) {
 
     return (
       <Container>
-        <Row>
-          <Col>
-            <Image src={user.avatarUrl} roundedCircle fluid />
-            <h1>{user.name}</h1>
+        <Row xs={1} lg={2}>
+          <Col
+            xs={12}
+            md={4}
+            className="d-flex flex-column align-items-center mt-5"
+          >
+            <Image className="w-50" src={user.avatarUrl} roundedCircle fluid />
+            <h1 className="mt-2 text-center">{user.name}</h1>
             <p>{user.location}</p>
             <p>{user.email}</p>
           </Col>
-          <Col>
-            <RepositoriesTable></RepositoriesTable>
+          <Col xs={12} md={8}>
+            <RepositoriesList></RepositoriesList>
           </Col>
         </Row>
       </Container>
