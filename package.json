@@ -2,7 +2,6 @@
   "name": "git-challenge",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://hugoaleuchs.github.io/gitChallenge/",
   "dependencies": {
     "@apollo/react-hooks": "^4.0.0",
     "@testing-library/jest-dom": "^5.14.1",

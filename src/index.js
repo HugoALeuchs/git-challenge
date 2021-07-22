@@ -7,14 +7,12 @@ import reportWebVitals from "./reportWebVitals";
 import ApolloClient from "apollo-boost";
 import { ApolloProvider } from "@apollo/react-hooks";
 
-import { token } from "./config/graphql.json";
-
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const client = new ApolloClient({
   uri: "https://api.github.com/graphql",
   headers: {
-    Authorization: `Bearer ${token}`,
+    Authorization: `Bearer ${process.env.REACT_APP_API_KEY}`,
   },
 });
 
