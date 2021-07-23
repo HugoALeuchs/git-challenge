@@ -42,11 +42,11 @@ function RepositoriesList(props) {
 
   function filterValue(value) {
     if (value === "Fork") {
-      setQuery("fork:false user:HugoALeuchs is:public");
+      setQuery("fork:only user:HugoALeuchs is:public");
     } else if (value === "Fechado") {
-      setQuery(`${query} state:close`);
+      setQuery(`fork:only user:HugoALeuchs is:public state:close`);
     } else if (value === "Arquivado") {
-      setQuery(`${query} state:archived`);
+      setQuery(`fork:only user:HugoALeuchs is:public state:archived`);
     } else {
       setQuery("fork:true user:HugoALeuchs is:public");
     }
